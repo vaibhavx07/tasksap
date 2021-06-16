@@ -1,0 +1,76 @@
+<p-toast></p-toast>
+<div class="card">
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2"
+                (click)="openNew()"></button>
+        </ng-template>
+
+    </p-toolbar>
+    <p-table [value]="taskdata" styleClass="p-datatable-gridlines"   selectionMode="single" [(selection)]="selectedtask" dataKey="id"
+    (onRowSelect)="onRowSelect($event)">
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="assignee">Assignee <p-sortIcon field="assignee"></p-sortIcon></th>
+                <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+                <th pSortableColumn="due_date">Due Date <p-sortIcon field="due_date"></p-sortIcon></th>
+                <th pSortableColumn="notes">Note <p-sortIcon field="notes"></p-sortIcon></th>
+                <th style="width: 100px;text-align: center;">Delete</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-sale>
+            <tr [pSelectableRow]="sale">
+                <td>{{sale.name}}</td>
+                <td>{{sale.assignee}}</td>
+                <td *ngIf="sale.status==0">Not Started</td>
+                <td *ngIf="sale.status==1">In Progress</td>
+                <td *ngIf="sale.status==2">Done</td>
+                <td>{{sale.due_date | date :'YYYY-MM-dd'}}</td>
+                <td>{{sale.notes}}</td>
+                <td style="width: 100px;text-align: center;"><i style="cursor: pointer;" (click)="deletetask(sale.id)" class="pi pi-trash"></i></td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Task Details" [modal]="true"
+    styleClass="p-fluid">
+    <form name="form" (ngSubmit)="f.form.valid && saveProduct()" #f="ngForm" novalidate>    
+       
+            <div class="p-field">
+                <label for="name">Task</label>
+                <input type="text" pInputText   name="name"  #name="ngModel" [(ngModel)]="task.name" required autofocus />
+                <small class="p-error" *ngIf="f.submitted && name.invalid && name.errors?.required">Name is required.</small>
+            </div>
+            <div class="p-field">
+                <label for="description">Notes</label>
+                <textarea id="notes"  name="notes"  #notes="ngModel" pInputTextarea [(ngModel)]="task.notes" rows="3" cols="20"></textarea>
+            </div>
+            <div class="p-field">
+                <label for="assignee">Assignee</label>
+                <input type="text" pInputText  name="assignee"  #assignee="ngModel" [(ngModel)]="task.assignee" required />
+                <small class="p-error" *ngIf="f.submitted && assignee.invalid && assignee.errors?.required">Assignee is required.</small>
+            </div>
+            <div class="p-field">
+                <label for="status">Status</label>
+                <p-dropdown [(ngModel)]="task.status" name="status"  #status="ngModel"  [options]="statuses"
+                    placeholder="Select Status">
+                </p-dropdown>
+            </div>
+            <div class="p-field">
+                <label for="due_date">Due Date</label>
+                <p-calendar  [minDate]="mindate" [readonlyInput]="true" name="due_date"  #due_date="ngModel" tooltipPosition="top" appendTo="body"
+                    pTooltip="Beginning date of this event Format (YYYY-MM-dd)" [(ngModel)]="task.due_date"
+                    dateFormat="yy-mm-dd" [showIcon]="false">
+                </p-calendar>
+            </div>
+        
+       
+
+       
+            <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                (click)="productDialog=false;"></button>
+            <button pButton type="submit" [disabled]="disablebutton" pRipple label="Save" icon="pi pi-check" class="p-button-text"></button>
+       
+    </form> 
+</p-dialog>
